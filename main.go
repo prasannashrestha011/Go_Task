@@ -2,6 +2,8 @@ package main
 
 import (
 	"fmt"
+	"log"
+	"main/internal/database"
 	"net/http"
 	"os"
 
@@ -17,6 +19,12 @@ type User struct{
 func main() {
 	_=godotenv.Load()
 
+	db_url:=os.Getenv("DB_URL")
+	if db_url==" "{
+		log.Println("Database URL Not provided")
+	}
+
+	database.Connect(db_url)
 	r := gin.Default()
 	
 	r.POST("/user",func(ctx *gin.Context){
