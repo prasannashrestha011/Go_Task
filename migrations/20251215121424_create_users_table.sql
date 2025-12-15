@@ -2,7 +2,7 @@
 -- +goose StatementBegin
 SELECT 'up SQL query';
 CREATE EXTENSION IF NOT EXISTS "pgcrypto";
-CREATE TABLE users(
+CREATE TABLE user(
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     name TEXT,
     email TEXT UNIQUE,
