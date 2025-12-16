@@ -47,12 +47,17 @@ func NewUserService(repo repository.UserRepository) UserService {
 }
 
 func (u *userService) RegisterUser(dto *models.UserCreateDTO) (*models.UserResponseDTO, error) {
+	
+	hashedPwd,err:=utils.HashPassoword(dto.Password)
+	if err!=nil{
+		return nil,err
+	}
 	user := &models.User{
 		Name:     dto.Name,
 		Email:    dto.Email,
-		Password: dto.Password,
+		Password:hashedPwd,
 	}
-	err := u.repo.Create(user)
+	err = u.repo.Create(user)
 	if err != nil {
 		return nil, err
 	}
