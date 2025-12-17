@@ -38,20 +38,27 @@ func (a *authHandler) Login(ctx *gin.Context) {
 		ctx.JSON(http.StatusBadRequest,gin.H{
 			"error":"Invalid request body",
 		})
+		return
 	}
 	logger.Log.Info("Login Attempted",zap.String("Email",userCreds.Email),zap.Time("logged_at",time.Now()))
 	authData,err:=a.authService.Login(ctx,userCreds)
 	if err!=nil{
 		logger.Log.Info("Login Failed: ",zap.String("Email",userCreds.Email))
-		ctx.JSON(http.StatusForbidden,gin.H{
-			"error":"Invalid credentials",
-		})
+		_=ctx.Error(utils.ErrUnAuthorized)
+		return
 	}
 	accessToken,refreshToken,err:=utils.GenerateTokens(authData.ID)
 	if err!=nil{
-		ctx.JSON(http.StatusForbidden,gin.H{
-			"error":"Failed to generate authentication token, please try again",
+		ctx.JSON(http.StatusUnauthorized,gin.H{
+			"error":"",
 		})
+		appErr:=utils.AppError{
+			Message:"Failed to generate authentication token, please try again" ,
+			Code: 401,
+			Err: nil,
+		}
+		_=ctx.Error(&appErr)
+		return
 	}
 
 	logger.Log.Info("Login Success: ",zap.String("Email",userCreds.Email))
@@ -72,9 +79,12 @@ func (a *authHandler) Refresh(ctx *gin.Context) {
 	}
 	token,err:=utils.ValidateJWT(refreshToken)
 	if err!=nil{
-		ctx.JSON(http.StatusUnauthorized,gin.H{
-			"error":"Invalid refresh token, please login again",
-		})
+		appErr:=utils.AppError{
+			Message:"Invalid refresh token, please login again" ,
+			Code: 404,
+			Err: err,
+		}
+		_=ctx.Error(&appErr)
 		return
 	}
 	userIDStr,err:=utils.GenerateUserIDFromToken(token)
@@ -102,6 +112,7 @@ func (a *authHandler) Validate(ctx *gin.Context) {
 		ctx.JSON(http.StatusUnauthorized,gin.H{
 			"error":"Invalid userID or token is missing",
 		})
+		return
 	}
 	logger.Log.Info("Attempted Token validation: ",zap.String("userID",userID.(string)),zap.Time("time",time.Now()))
 	ctx.JSON(http.StatusOK,gin.H{
