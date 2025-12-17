@@ -6,6 +6,7 @@ import (
 	"main/internal/handlers"
 	"main/internal/logger"
 	"main/internal/middlewares"
+	ginmiddlewares "main/internal/middlewares/gin_middlewares"
 	"main/internal/repository"
 	"main/internal/services"
 	"os"
@@ -39,6 +40,7 @@ func AUTH_CMD() {
 	//initializing  routers
 	r:=gin.Default()
 	auth:=r.Group("/auth")
+	 auth.Use(ginmiddlewares.ErrorMiddleware())
 	auth.POST("/login",authHandler.Login)
 	auth.POST("/refresh",authHandler.Refresh)
 
