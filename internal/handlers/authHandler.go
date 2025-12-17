@@ -6,6 +6,7 @@ import (
 	"main/internal/services"
 	"main/internal/utils"
 	"net/http"
+	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
@@ -38,9 +39,10 @@ func (a *authHandler) Login(ctx *gin.Context) {
 			"error":"Invalid request body",
 		})
 	}
-
+	logger.Log.Info("Login Attempted",zap.String("Email",userCreds.Email),zap.Time("logged_at",time.Now()))
 	authData,err:=a.authService.Login(ctx,userCreds)
 	if err!=nil{
+		logger.Log.Info("Login Failed: ",zap.String("Email",userCreds.Email))
 		ctx.JSON(http.StatusForbidden,gin.H{
 			"error":"Invalid credentials",
 		})
@@ -51,6 +53,8 @@ func (a *authHandler) Login(ctx *gin.Context) {
 			"error":"Failed to generate authentication token, please try again",
 		})
 	}
+
+	logger.Log.Info("Login Success: ",zap.String("Email",userCreds.Email))
 	ctx.SetCookie("refresh_token",refreshToken,7*24*3600,"/","",false,true)
 	ctx.Header("Authorization","Bearer "+accessToken)
 	ctx.JSON(http.StatusOK,gin.H{
@@ -86,13 +90,24 @@ func (a *authHandler) Refresh(ctx *gin.Context) {
 			"error":"Failed to generate new access token",
 		})
 	}
+	logger.Log.Info("Refresh token generated: ",zap.String("userID",userIDStr),zap.Time("time",time.Now()))
 	ctx.JSON(http.StatusOK,gin.H{
 		"accessToken":"Bearer "+newAccessToken,
 	})
 }
 
 func (a *authHandler) Validate(ctx *gin.Context) {
-	panic("unimplemented")
+	userID,exists:=ctx.Get("userID")
+	if !exists{
+		ctx.JSON(http.StatusUnauthorized,gin.H{
+			"error":"Invalid userID or token is missing",
+		})
+	}
+	logger.Log.Info("Attempted Token validation: ",zap.String("userID",userID.(string)),zap.Time("time",time.Now()))
+	ctx.JSON(http.StatusOK,gin.H{
+		"message":"Token is valid",
+		"userID":userID,
+	})
 }
 
 /*
@@ -107,7 +122,7 @@ func (a * authHandler) Profile(ctx *gin.Context){
 		})
 		return
 	}
-	logger.Log.Info("Logged user",zap.String("userID",userID.(string)))
+	logger.Log.Info("Logged user",zap.String("userID",userID.(string)),zap.Time("time",time.Now()))
 	ctx.JSON(http.StatusOK,gin.H{
 		"message":"You are an authorized user",
 		"userID":userID,
