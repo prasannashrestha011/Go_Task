@@ -17,14 +17,14 @@ func JWTAuthMiddleware(next http.Handler)http.Handler{
 		authHeader:=r.Header.Get("Authorization")
 		parts:=strings.Split(authHeader, "Bearer ")
 		if len(parts)!=2 || strings.TrimSpace(parts[1])==""{
-			http.Error(w,"Invalid authentication token",http.StatusUnauthorized)
+			http.Error(w,"Request Unauthorized, please login to your session",http.StatusUnauthorized)
 			return
 		} 
 		tokenStr:=parts[1]
 		token,err:=utils.ValidateJWT(tokenStr)
 		if err!=nil{
 			logger.Log.Info("JWT validation error",zap.Error(err))
-			http.Error(w,"Authentication token expired",http.StatusUnauthorized)
+			http.Error(w,"Session expired, refresh your access token",http.StatusUnauthorized)
 			return
 		}
 		userID,err:=utils.GenerateUserIDFromToken(token)
