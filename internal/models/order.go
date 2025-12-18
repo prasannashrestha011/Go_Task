@@ -1,11 +1,20 @@
 package models
 
-import "time"
+import (
+	"time"
+
+	"github.com/google/uuid"
+)
 
 type Order struct {
-	ID         uint64
-	UserID     uint64
+	ID         uuid.UUID `gorm:"type:uuid;default:uuid_generate_v4();primaryKey"`
+	UserID     uuid.UUID
+	OrderName string
 	Amount     float64
 	Status     string
 	CreatedAt time.Time
+}
+
+func (Order) TableName() string{
+	return `order`
 }
