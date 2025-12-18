@@ -37,7 +37,7 @@ func (r *userRepo) Delete(ctx context.Context,id uuid.UUID) error {
 // pagination will be implemented in the future
 func (r *userRepo) GetAll(ctx context.Context) ([]*models.User, error) {
 	var users []*models.User
-	if err:=r.db.WithContext(ctx).Find(users).Error;err!=nil{
+	if err:=r.db.WithContext(ctx).Find(&users).Error;err!=nil{
 		return nil,err
 	}
 	return users,nil
