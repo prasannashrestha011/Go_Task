@@ -1,2 +1,4 @@
 .env
 /tmp
+
+/internal/config/config.yml
