@@ -36,9 +36,9 @@ func NewAuthHandler(authService services.AuthService) AuthHandler {
 //@Accept json
 //@Produce json
 //@Param userCreds body schema.UserLoginDTO true "User credentials"
-//@Success 200 {object} schema.Response "Login successful"
-//@Error 400 {object} schema.Response "Bad request"
-//@Error 401 {object} schema.Response "Invalid credentials"
+//@Success 200 {object} schema.SuccessResponseSchema "Login successful"
+//@Error 400 {object} schema.ErrorResponseSchema "Bad request"
+//@Error 401 {object} schema.ErrorResponseSchema "Invalid credentials"
 //@Router /auth/login [post]
 func (a *authHandler) Login(ctx *gin.Context) {
 	var userCreds *schema.UserLoginDTO
@@ -52,8 +52,7 @@ func (a *authHandler) Login(ctx *gin.Context) {
 
 	authData,err:=a.authService.Login(ctx,userCreds)
 	if err!=nil{
-		logger.Log.Info("Login Failed: ",zap.String("Email",userCreds.Email))
-		_=ctx.Error(utils.NewAppError(401,"INVALID_CREDS","Incorrect email or password",nil))
+		_=ctx.Error(err)
 		return
 
 	}
@@ -80,8 +79,8 @@ func (a *authHandler) Login(ctx *gin.Context) {
 //@Accept json
 //@Produce json
 //Param refresh_token cookie string true "Refresh token cookie"
-//@Success 200 {object} schema.Response "New access token"
-//@Failure 401 {object} schema.Response "Invalid refresh token"
+//@Success 200 {object} schema.SuccessResponseSchema "New access token"
+//@Failure 401 {object} schema.ErrorResponseSchema "Invalid refresh token"
 //@Router /auth/refresh [post]
 func (a *authHandler) Refresh(ctx *gin.Context) {
 	refreshToken,err:=ctx.Cookie("refresh_token")
@@ -118,8 +117,8 @@ func (a *authHandler) Refresh(ctx *gin.Context) {
 //@Accept json
 //@Product json
 //@Security ApiKeyAuth
-//@Success 200 {object} schema.Response "Token is valid"
-//@Failure 401 {object} schema.Response "Invalid or missing token"
+//@Success 200 {object} schema.SuccessResponseSchema "Token is valid"
+//@Failure 401 {object} schema.ErrorResponseSchema "Invalid or missing token"
 //@Router /auth/validate [get]
 func (a *authHandler) Validate(ctx *gin.Context) {
 	userID,exists:=ctx.Get("userID")

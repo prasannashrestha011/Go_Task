@@ -33,8 +33,8 @@ func NewUserHandler(userService services.UserService) UserService {
 // @Description  Returns a list of all users from the database
 // @Tags         users
 // @Produce      json
-// @Success      200  {object}  schema.Response
-// @Failure      404  {object}  schema.Response
+// @Success      200  {object}  schema.SuccessResponseSchema
+// @Failure      404  {object}  schema.ErrorResponseSchema
 // @Router       /users [get]
 func (u *userHandler) GET_ALL_USER(w http.ResponseWriter, r *http.Request) {
 	ctx:=r.Context()
@@ -56,8 +56,8 @@ func (u *userHandler) GET_ALL_USER(w http.ResponseWriter, r *http.Request) {
 // @Tags         users
 // @Produce      json
 // @Param        id   path      string  true  "User ID"
-// @Success      200  {object}  schema.Response
-// @Failure      404  {object}  schema.Response
+// @Success      200  {object}  schema.SuccessResponseSchema
+// @Failure      404  {object}  schema.ErrorResponseSchema
 // @Router       /users/{id} [get]
 func (u *userHandler) GET_USER(w http.ResponseWriter, r *http.Request) {
 	ctx:=r.Context()
@@ -80,9 +80,9 @@ func (u *userHandler) GET_USER(w http.ResponseWriter, r *http.Request) {
 // @Tags         users
 // @Produce      json
 // @Param        id   path      string  true  "User ID"
-// @Success      200  {object}  schema.Response
-// @Failure      400  {object}  schema.Response
-// @Failure      500  {object}  schema.Response
+// @Success      200  {object}  schema.SuccessResponseSchema
+// @Failure      400  {object}  schema.ErrorResponseSchema
+// @Failure      500  {object}  schema.ErrorResponseSchema
 // @Router       /users/{id} [delete]
 func (u *userHandler) DELETE_USER(w http.ResponseWriter, r *http.Request) {
 	ctx:=r.Context()
@@ -110,9 +110,9 @@ func (u *userHandler) DELETE_USER(w http.ResponseWriter, r *http.Request) {
 // @Accept       json
 // @Produce      json
 // @Param        user  body      schema.UserCreateDTO  true  "User registration payload"
-// @Success      200   {object}  schema.Response
-// @Failure      400   {object}  schema.Response
-// @Failure      500   {object}  schema.Response
+// @Success      200   {object}  schema.SuccessResponseSchema
+// @Failure      400   {object}  schema.ErrorResponseSchema
+// @Failure      500   {object}  schema.ErrorResponseSchema
 // @Router       /users/create [post]
 func (u *userHandler) REGISTER_USER(w http.ResponseWriter, r *http.Request) {
 
@@ -141,9 +141,9 @@ func (u *userHandler) REGISTER_USER(w http.ResponseWriter, r *http.Request) {
 // @Produce      json
 // @Param        id    path      string              true  "User ID"
 // @Param        user  body      schema.UserUpdateDTO  true  "Updated user data"
-// @Success      200   {object}  schema.Response
-// @Failure      400   {object}  schema.Response
-// @Failure      500   {object}  schema.Response
+// @Success      200   {object}  schema.SuccessResponseSchema
+// @Failure      400   {object}  schema.ErrorResponseSchema
+// @Failure      500   {object}  schema.ErrorResponseSchema
 // @Router       /users/update/{id} [put]
 func (u *userHandler) UPDATE_USER(w http.ResponseWriter, r *http.Request) {
 
