@@ -14,6 +14,17 @@ type ErrorDetail struct {
 	Details string `json:"details,omitempty"`
 }
 
+// Schema for displaying in swagger doc
+type SuccessResponseSchema struct {
+	Success bool        `json:"success"`
+	Message string      `json:"message,omitempty"`
+	Data    interface{} `json:"data,omitempty"`
+}
+type ErrorResponseSchema struct {
+	Success bool         `json:"success"`
+	Error   *ErrorDetail `json:"error,omitempty"`
+}
+
 func SuccessResponse(data interface{}, message string) Response {
 	return Response{
 		Success: true,
