@@ -2,13 +2,20 @@ package config
 
 import (
 	"log"
+	"os"
 
 	"github.com/spf13/viper"
 )
 
 var AppCfgs *AppConfigs
 func Load() {
-	viper.SetConfigFile("../../internal/config/config.yml")
+	configPath := "./internal/config/config.yml"
+	if envPath := os.Getenv("CONFIG_PATH"); envPath != "" {
+		configPath = envPath
+	}
+
+	viper.SetConfigFile(configPath)
+
 	if err:=viper.ReadInConfig();err!=nil{
 		log.Println("Viper config load error: ",err.Error())
 		return
