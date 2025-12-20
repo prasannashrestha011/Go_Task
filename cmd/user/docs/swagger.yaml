@@ -1,18 +1,4 @@
-basePath: /api/v1
 definitions:
-  schema.CreateOrder:
-    properties:
-      amount:
-        type: number
-      orderName:
-        type: string
-      userID:
-        type: string
-    required:
-    - amount
-    - orderName
-    - userID
-    type: object
   schema.ErrorDetail:
     properties:
       code:
@@ -22,11 +8,16 @@ definitions:
       message:
         type: string
     type: object
-  schema.Response:
+  schema.ErrorResponseSchema:
     properties:
-      data: {}
       error:
         $ref: '#/definitions/schema.ErrorDetail'
+      success:
+        type: boolean
+    type: object
+  schema.SuccessResponseSchema:
+    properties:
+      data: {}
       message:
         type: string
       success:
@@ -46,16 +37,6 @@ definitions:
     - name
     - password
     type: object
-  schema.UserLoginDTO:
-    properties:
-      email:
-        type: string
-      password:
-        type: string
-    required:
-    - email
-    - password
-    type: object
   schema.UserUpdateDTO:
     properties:
       email:
@@ -69,154 +50,16 @@ definitions:
     - name
     - password
     type: object
-host: localhost:8082
+host: localhost:8081
 info:
-  contact:
-    email: support@example.com
-    name: API Support
-    url: http://www.example.com/support
+  contact: {}
   description: This API manages orders.
   license:
     name: MIT
     url: https://opensource.org/licenses/MIT
-  termsOfService: http://example.com/terms/
-  title: Orders API
+  title: User API
   version: "1.0"
 paths:
-  /auth/login:
-    post:
-      consumes:
-      - application/json
-      description: The request body will contain fields (email and password) as credentials.
-        The given credentials will be used to authenticate user. If authentication
-        is successful, access and refresh token(jwt) will be issued to the user with
-        claims(userID).
-      parameters:
-      - description: User credentials
-        in: body
-        name: userCreds
-        required: true
-        schema:
-          $ref: '#/definitions/schema.UserLoginDTO'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: Login successful
-          schema:
-            $ref: '#/definitions/schema.Response'
-      summary: Login function for the app
-      tags:
-      - auth
-  /auth/refresh:
-    post:
-      consumes:
-      - application/json
-      description: This handler is resposible for refreshing the session state of
-        access token. The access token persist for 15m after its issue. Once the token
-        is expired, refresh token which is issued during login action, is used in
-        order to revise the session state of access token.
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: New access token
-          schema:
-            $ref: '#/definitions/schema.Response'
-        "401":
-          description: Invalid refresh token
-          schema:
-            $ref: '#/definitions/schema.Response'
-      summary: Refresh access token through refresh token
-  /auth/validate:
-    get:
-      consumes:
-      - application/json
-      responses:
-        "200":
-          description: Token is valid
-          schema:
-            $ref: '#/definitions/schema.Response'
-        "401":
-          description: Invalid or missing token
-          schema:
-            $ref: '#/definitions/schema.Response'
-      security:
-      - ApiKeyAuth: []
-      summary: Checks if current access token is valid.
-  /orders:
-    get:
-      description: Returns a list of all orders in the system
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/schema.Response'
-        "404":
-          description: Not Found
-          schema:
-            $ref: '#/definitions/schema.Response'
-      summary: List all orders
-      tags:
-      - orders
-    post:
-      consumes:
-      - application/json
-      description: Creates a new order for a user with the provided order data
-      parameters:
-      - description: Order payload
-        in: body
-        name: order
-        required: true
-        schema:
-          $ref: '#/definitions/schema.CreateOrder'
-      produces:
-      - application/json
-      responses:
-        "201":
-          description: Created
-          schema:
-            $ref: '#/definitions/schema.Response'
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/schema.Response'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/schema.Response'
-      summary: Create a new order
-      tags:
-      - orders
-  /orders/{id}:
-    get:
-      description: Returns details of a specific order by its ID
-      parameters:
-      - description: Order ID
-        in: path
-        name: id
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/schema.Response'
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/schema.Response'
-        "404":
-          description: Not Found
-          schema:
-            $ref: '#/definitions/schema.Response'
-      summary: Get order by ID
-      tags:
-      - orders
   /users:
     get:
       description: Returns a list of all users from the database
@@ -226,11 +69,11 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/schema.Response'
+            $ref: '#/definitions/schema.SuccessResponseSchema'
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/schema.Response'
+            $ref: '#/definitions/schema.ErrorResponseSchema'
       summary: List all users
       tags:
       - users
@@ -249,15 +92,15 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/schema.Response'
+            $ref: '#/definitions/schema.SuccessResponseSchema'
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/schema.Response'
+            $ref: '#/definitions/schema.ErrorResponseSchema'
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/schema.Response'
+            $ref: '#/definitions/schema.ErrorResponseSchema'
       summary: Delete a user
       tags:
       - users
@@ -275,41 +118,14 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/schema.Response'
+            $ref: '#/definitions/schema.SuccessResponseSchema'
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/schema.Response'
+            $ref: '#/definitions/schema.ErrorResponseSchema'
       summary: Get user by ID
       tags:
       - users
-  /users/{id}/orders:
-    get:
-      description: Returns a list of orders associated with a specific user ID
-      parameters:
-      - description: User ID
-        in: path
-        name: id
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/schema.Response'
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/schema.Response'
-        "404":
-          description: Not Found
-          schema:
-            $ref: '#/definitions/schema.Response'
-      summary: Get all orders for a user
-      tags:
-      - orders
   /users/create:
     post:
       consumes:
@@ -328,15 +144,15 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/schema.Response'
+            $ref: '#/definitions/schema.SuccessResponseSchema'
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/schema.Response'
+            $ref: '#/definitions/schema.ErrorResponseSchema'
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/schema.Response'
+            $ref: '#/definitions/schema.ErrorResponseSchema'
       summary: Register a new user
       tags:
       - users
@@ -363,15 +179,15 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/schema.Response'
+            $ref: '#/definitions/schema.SuccessResponseSchema'
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/schema.Response'
+            $ref: '#/definitions/schema.ErrorResponseSchema'
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/schema.Response'
+            $ref: '#/definitions/schema.ErrorResponseSchema'
       summary: Update user details
       tags:
       - users

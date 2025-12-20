@@ -9,12 +9,7 @@ const docTemplate = `{
     "info": {
         "description": "{{escape .Description}}",
         "title": "{{.Title}}",
-        "termsOfService": "http://example.com/terms/",
-        "contact": {
-            "name": "API Support",
-            "url": "http://www.example.com/support",
-            "email": "support@example.com"
-        },
+        "contact": {},
         "license": {
             "name": "MIT",
             "url": "https://opensource.org/licenses/MIT"
@@ -24,204 +19,6 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
-        "/auth/login": {
-            "post": {
-                "description": "The request body will contain fields (email and password) as credentials. The given credentials will be used to authenticate user. If authentication is successful, access and refresh token(jwt) will be issued to the user with claims(userID).",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "auth"
-                ],
-                "summary": "Login function for the app",
-                "parameters": [
-                    {
-                        "description": "User credentials",
-                        "name": "userCreds",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/schema.UserLoginDTO"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Login successful",
-                        "schema": {
-                            "$ref": "#/definitions/schema.Response"
-                        }
-                    }
-                }
-            }
-        },
-        "/auth/refresh": {
-            "post": {
-                "description": "This handler is resposible for refreshing the session state of access token. The access token persist for 15m after its issue. Once the token is expired, refresh token which is issued during login action, is used in order to revise the session state of access token.",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "summary": "Refresh access token through refresh token",
-                "responses": {
-                    "200": {
-                        "description": "New access token",
-                        "schema": {
-                            "$ref": "#/definitions/schema.Response"
-                        }
-                    },
-                    "401": {
-                        "description": "Invalid refresh token",
-                        "schema": {
-                            "$ref": "#/definitions/schema.Response"
-                        }
-                    }
-                }
-            }
-        },
-        "/auth/validate": {
-            "get": {
-                "security": [
-                    {
-                        "ApiKeyAuth": []
-                    }
-                ],
-                "consumes": [
-                    "application/json"
-                ],
-                "summary": "Checks if current access token is valid.",
-                "responses": {
-                    "200": {
-                        "description": "Token is valid",
-                        "schema": {
-                            "$ref": "#/definitions/schema.Response"
-                        }
-                    },
-                    "401": {
-                        "description": "Invalid or missing token",
-                        "schema": {
-                            "$ref": "#/definitions/schema.Response"
-                        }
-                    }
-                }
-            }
-        },
-        "/orders": {
-            "get": {
-                "description": "Returns a list of all orders in the system",
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "orders"
-                ],
-                "summary": "List all orders",
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/schema.Response"
-                        }
-                    },
-                    "404": {
-                        "description": "Not Found",
-                        "schema": {
-                            "$ref": "#/definitions/schema.Response"
-                        }
-                    }
-                }
-            },
-            "post": {
-                "description": "Creates a new order for a user with the provided order data",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "orders"
-                ],
-                "summary": "Create a new order",
-                "parameters": [
-                    {
-                        "description": "Order payload",
-                        "name": "order",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/schema.CreateOrder"
-                        }
-                    }
-                ],
-                "responses": {
-                    "201": {
-                        "description": "Created",
-                        "schema": {
-                            "$ref": "#/definitions/schema.Response"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/schema.Response"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/schema.Response"
-                        }
-                    }
-                }
-            }
-        },
-        "/orders/{id}": {
-            "get": {
-                "description": "Returns details of a specific order by its ID",
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "orders"
-                ],
-                "summary": "Get order by ID",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Order ID",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/schema.Response"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/schema.Response"
-                        }
-                    },
-                    "404": {
-                        "description": "Not Found",
-                        "schema": {
-                            "$ref": "#/definitions/schema.Response"
-                        }
-                    }
-                }
-            }
-        },
         "/users": {
             "get": {
                 "description": "Returns a list of all users from the database",
@@ -236,13 +33,13 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/schema.Response"
+                            "$ref": "#/definitions/schema.SuccessResponseSchema"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/schema.Response"
+                            "$ref": "#/definitions/schema.ErrorResponseSchema"
                         }
                     }
                 }
@@ -276,19 +73,19 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/schema.Response"
+                            "$ref": "#/definitions/schema.SuccessResponseSchema"
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/schema.Response"
+                            "$ref": "#/definitions/schema.ErrorResponseSchema"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/schema.Response"
+                            "$ref": "#/definitions/schema.ErrorResponseSchema"
                         }
                     }
                 }
@@ -329,19 +126,19 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/schema.Response"
+                            "$ref": "#/definitions/schema.SuccessResponseSchema"
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/schema.Response"
+                            "$ref": "#/definitions/schema.ErrorResponseSchema"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/schema.Response"
+                            "$ref": "#/definitions/schema.ErrorResponseSchema"
                         }
                     }
                 }
@@ -370,13 +167,13 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/schema.Response"
+                            "$ref": "#/definitions/schema.SuccessResponseSchema"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/schema.Response"
+                            "$ref": "#/definitions/schema.ErrorResponseSchema"
                         }
                     }
                 }
@@ -403,60 +200,19 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/schema.Response"
+                            "$ref": "#/definitions/schema.SuccessResponseSchema"
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/schema.Response"
+                            "$ref": "#/definitions/schema.ErrorResponseSchema"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/schema.Response"
-                        }
-                    }
-                }
-            }
-        },
-        "/users/{id}/orders": {
-            "get": {
-                "description": "Returns a list of orders associated with a specific user ID",
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "orders"
-                ],
-                "summary": "Get all orders for a user",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "User ID",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/schema.Response"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/schema.Response"
-                        }
-                    },
-                    "404": {
-                        "description": "Not Found",
-                        "schema": {
-                            "$ref": "#/definitions/schema.Response"
+                            "$ref": "#/definitions/schema.ErrorResponseSchema"
                         }
                     }
                 }
@@ -464,25 +220,6 @@ const docTemplate = `{
         }
     },
     "definitions": {
-        "schema.CreateOrder": {
-            "type": "object",
-            "required": [
-                "amount",
-                "orderName",
-                "userID"
-            ],
-            "properties": {
-                "amount": {
-                    "type": "number"
-                },
-                "orderName": {
-                    "type": "string"
-                },
-                "userID": {
-                    "type": "string"
-                }
-            }
-        },
         "schema.ErrorDetail": {
             "type": "object",
             "properties": {
@@ -497,13 +234,21 @@ const docTemplate = `{
                 }
             }
         },
-        "schema.Response": {
+        "schema.ErrorResponseSchema": {
             "type": "object",
             "properties": {
-                "data": {},
                 "error": {
                     "$ref": "#/definitions/schema.ErrorDetail"
                 },
+                "success": {
+                    "type": "boolean"
+                }
+            }
+        },
+        "schema.SuccessResponseSchema": {
+            "type": "object",
+            "properties": {
+                "data": {},
                 "message": {
                     "type": "string"
                 },
@@ -529,21 +274,6 @@ const docTemplate = `{
                 "password": {
                     "type": "string",
                     "minLength": 6
-                }
-            }
-        },
-        "schema.UserLoginDTO": {
-            "type": "object",
-            "required": [
-                "email",
-                "password"
-            ],
-            "properties": {
-                "email": {
-                    "type": "string"
-                },
-                "password": {
-                    "type": "string"
                 }
             }
         },
@@ -579,10 +309,10 @@ const docTemplate = `{
 // SwaggerInfo holds exported Swagger Info so clients can modify it
 var SwaggerInfo = &swag.Spec{
 	Version:          "1.0",
-	Host:             "localhost:8082",
-	BasePath:         "/api/v1",
+	Host:             "localhost:8081",
+	BasePath:         "",
 	Schemes:          []string{"http"},
-	Title:            "Orders API",
+	Title:            "User API",
 	Description:      "This API manages orders.",
 	InfoInstanceName: "swagger",
 	SwaggerTemplate:  docTemplate,
