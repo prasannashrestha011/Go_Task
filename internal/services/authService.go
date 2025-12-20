@@ -2,12 +2,9 @@ package services
 
 import (
 	"context"
-	"main/internal/logger"
 	"main/internal/repository"
 	"main/internal/schema"
 	"main/internal/utils"
-
-	"go.uber.org/zap"
 )
 
 type AuthService interface {
@@ -30,7 +27,7 @@ func (a *authService) Login(ctx context.Context, creds *schema.UserLoginDTO) (*s
 	userDetails,err:=a.repo.GetByEmail(ctx,email)
 
 	if err!=nil{
-		logger.Log.Error("Failed to fetch the user details",zap.Error(err))
+		err:=utils.NewAppError(404,"INVALID_CREDENTIALS","Email not found in the database",nil)
 		return nil,err
 	}
 	isMatches:=utils.ComparePassword(userDetails.Password,creds.Password)
