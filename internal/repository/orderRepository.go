@@ -10,10 +10,11 @@ import (
 )
 
 type OrderRepository interface {
-	Create(ctx context.Context, newOrder *models.Order) error
+	Create(ctx context.Context, newOrder *models.Order)(*models.Order,error) 
 	Get(ctx context.Context, id uuid.UUID) (*models.Order, error)
 	GetUserOrders(ctx context.Context, userID uuid.UUID) ([]*models.Order, error)
 	GetAll(ctx context.Context) ([]*models.Order, error)
+	Update(ctx context.Context, order *models.Order)(*models.Order,error) 
 }
 
 type orderRepository struct {
@@ -27,8 +28,11 @@ func NewOrderRepository(db *gorm.DB) OrderRepository {
 	}
 
 }
-func (o *orderRepository) Create(ctx context.Context, newOrder *models.Order) error {
-	return o.db.WithContext(ctx).Create(newOrder).Error
+func (o *orderRepository) Create(ctx context.Context, newOrder *models.Order) (*models.Order,error) {
+	if err:=o.db.WithContext(ctx).Create(newOrder).Error;err!=nil{
+		return nil,err
+	}
+	return newOrder,nil
 }
 
 func (o *orderRepository) Get(ctx context.Context, id uuid.UUID) (*models.Order, error) {
@@ -46,16 +50,23 @@ func (o *orderRepository) GetUserOrders(ctx context.Context, userID uuid.UUID) (
 	if err != nil {
 		return nil, err
 	}
-    if len(user_orders) == 0 {
-        return nil, fmt.Errorf("no orders found for user %s", userID)
-    }
+	if len(user_orders) == 0 {
+		return nil, fmt.Errorf("no orders found for user %s", userID)
+	}
 	return user_orders, nil
 }
 
-func (o *orderRepository) GetAll(ctx context.Context) ( orders []*models.Order, err error) {
-	err=o.db.WithContext(ctx).Find(&orders).Error
-	if err!=nil{
-		return nil,err
+func (o *orderRepository) GetAll(ctx context.Context) (orders []*models.Order, err error) {
+	err = o.db.WithContext(ctx).Find(&orders).Error
+	if err != nil {
+		return nil, err
 	}
-	return orders,nil
+	return orders, nil
+}
+
+func (o *orderRepository) Update(ctx context.Context, order *models.Order)(*models.Order,error)  {
+	if err := o.db.WithContext(ctx).Save(order).Error; err != nil {
+		return nil, err
+	}
+	return order, nil
 }
