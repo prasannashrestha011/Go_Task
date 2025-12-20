@@ -20,11 +20,13 @@ func ToOrderResponseDTO(order *models.Order)(*schema.OrderResponse){
 	return &schema.OrderResponse{
 		ID: order.ID,
 		UserID: order.UserID,
+		OrderName: order.OrderName,
 		Amount: order.Amount,
-		CreatedAT: order.CreatedAt,
+		CreatedAt: order.CreatedAt,
 		Status: order.Status,
 	}
 }
+
 
 func ToUserOrderResponseDTO(orders []*models.Order)([]*schema.UserOrderResponse){
 	responses:=make([]*schema.UserOrderResponse,0,len(orders))
