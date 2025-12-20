@@ -21,6 +21,8 @@ func ToOrderResponseDTO(order *models.Order)(*schema.OrderResponse){
 		ID: order.ID,
 		UserID: order.UserID,
 		OrderName: order.OrderName,
+		Price: order.Price,
+		Quantity: order.Quantity,
 		Amount: order.Amount,
 		CreatedAt: order.CreatedAt,
 		Status: order.Status,
@@ -36,6 +38,8 @@ func ToUserOrderResponseDTO(orders []*models.Order)([]*schema.UserOrderResponse)
 		}
 	responses = append(responses, &schema.UserOrderResponse{
 		ID: order.ID,
+		Price: order.Price,
+		Quantity: order.Quantity,
 		Amount: order.Amount,
 		CreatedAt: order.CreatedAt,
 		Status: order.Status,

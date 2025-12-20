@@ -10,7 +10,9 @@ type Order struct {
 	ID         uuid.UUID `gorm:"type:uuid;default:uuid_generate_v4();primaryKey"`
 	UserID     uuid.UUID
 	OrderName string
-	Amount     float64
+	Price     float64
+	Quantity int
+	Amount    float64
 	Status     string
 	CreatedAt time.Time
 }
