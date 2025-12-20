@@ -24,11 +24,26 @@ definitions:
       message:
         type: string
     type: object
+  schema.ErrorResponseSchema:
+    properties:
+      error:
+        $ref: '#/definitions/schema.ErrorDetail'
+      success:
+        type: boolean
+    type: object
   schema.Response:
     properties:
       data: {}
       error:
         $ref: '#/definitions/schema.ErrorDetail'
+      message:
+        type: string
+      success:
+        type: boolean
+    type: object
+  schema.SuccessResponseSchema:
+    properties:
+      data: {}
       message:
         type: string
       success:
@@ -73,15 +88,11 @@ definitions:
     type: object
 host: localhost:8080
 info:
-  contact:
-    email: support@example.com
-    name: API Support
-    url: http://www.example.com/support
+  contact: {}
   description: This API manages orders.
   license:
     name: MIT
     url: https://opensource.org/licenses/MIT
-  termsOfService: http://example.com/terms/
   title: Auth API
   version: "1.0"
 paths:
@@ -106,7 +117,7 @@ paths:
         "200":
           description: Login successful
           schema:
-            $ref: '#/definitions/schema.Response'
+            $ref: '#/definitions/schema.SuccessResponseSchema'
       summary: Login function for the app
       tags:
       - auth
@@ -124,11 +135,11 @@ paths:
         "200":
           description: New access token
           schema:
-            $ref: '#/definitions/schema.Response'
+            $ref: '#/definitions/schema.SuccessResponseSchema'
         "401":
           description: Invalid refresh token
           schema:
-            $ref: '#/definitions/schema.Response'
+            $ref: '#/definitions/schema.ErrorResponseSchema'
       summary: Refresh access token through refresh token
   /auth/validate:
     get:
@@ -138,11 +149,11 @@ paths:
         "200":
           description: Token is valid
           schema:
-            $ref: '#/definitions/schema.Response'
+            $ref: '#/definitions/schema.SuccessResponseSchema'
         "401":
           description: Invalid or missing token
           schema:
-            $ref: '#/definitions/schema.Response'
+            $ref: '#/definitions/schema.ErrorResponseSchema'
       security:
       - ApiKeyAuth: []
       summary: Checks if current access token is valid.

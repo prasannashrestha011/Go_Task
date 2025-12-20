@@ -9,12 +9,7 @@ const docTemplate = `{
     "info": {
         "description": "{{escape .Description}}",
         "title": "{{.Title}}",
-        "termsOfService": "http://example.com/terms/",
-        "contact": {
-            "name": "API Support",
-            "url": "http://www.example.com/support",
-            "email": "support@example.com"
-        },
+        "contact": {},
         "license": {
             "name": "MIT",
             "url": "https://opensource.org/licenses/MIT"
@@ -52,7 +47,7 @@ const docTemplate = `{
                     "200": {
                         "description": "Login successful",
                         "schema": {
-                            "$ref": "#/definitions/schema.Response"
+                            "$ref": "#/definitions/schema.SuccessResponseSchema"
                         }
                     }
                 }
@@ -72,13 +67,13 @@ const docTemplate = `{
                     "200": {
                         "description": "New access token",
                         "schema": {
-                            "$ref": "#/definitions/schema.Response"
+                            "$ref": "#/definitions/schema.SuccessResponseSchema"
                         }
                     },
                     "401": {
                         "description": "Invalid refresh token",
                         "schema": {
-                            "$ref": "#/definitions/schema.Response"
+                            "$ref": "#/definitions/schema.ErrorResponseSchema"
                         }
                     }
                 }
@@ -99,13 +94,13 @@ const docTemplate = `{
                     "200": {
                         "description": "Token is valid",
                         "schema": {
-                            "$ref": "#/definitions/schema.Response"
+                            "$ref": "#/definitions/schema.SuccessResponseSchema"
                         }
                     },
                     "401": {
                         "description": "Invalid or missing token",
                         "schema": {
-                            "$ref": "#/definitions/schema.Response"
+                            "$ref": "#/definitions/schema.ErrorResponseSchema"
                         }
                     }
                 }
@@ -501,6 +496,17 @@ const docTemplate = `{
                 }
             }
         },
+        "schema.ErrorResponseSchema": {
+            "type": "object",
+            "properties": {
+                "error": {
+                    "$ref": "#/definitions/schema.ErrorDetail"
+                },
+                "success": {
+                    "type": "boolean"
+                }
+            }
+        },
         "schema.Response": {
             "type": "object",
             "properties": {
@@ -508,6 +514,18 @@ const docTemplate = `{
                 "error": {
                     "$ref": "#/definitions/schema.ErrorDetail"
                 },
+                "message": {
+                    "type": "string"
+                },
+                "success": {
+                    "type": "boolean"
+                }
+            }
+        },
+        "schema.SuccessResponseSchema": {
+            "type": "object",
+            "properties": {
+                "data": {},
                 "message": {
                     "type": "string"
                 },
