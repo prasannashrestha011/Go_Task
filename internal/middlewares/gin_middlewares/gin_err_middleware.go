@@ -25,7 +25,7 @@ func ErrorMiddleware() gin.HandlerFunc{
 			logger.Log.Error("Request failed",
 				zap.Int("status code",e.StatusCode),
 				zap.String("error message",e.Message),
-				zap.String("error details",e.Details))
+				)
 			ctx.AbortWithStatusJSON(e.StatusCode,schema.Response{
 				Success: false,
 				Message: e.Details,
