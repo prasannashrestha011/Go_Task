@@ -10,10 +10,10 @@ func InitLogger(isDev bool){
 
 	var err error
 	if isDev{
-		Log,err=zap.NewDevelopment()
+		Log,err=zap.NewDevelopment(zap.AddStacktrace(zap.DPanicLevel))
 		Log.Info("Logger Initialized (Development)")
 	}else{
-		Log,err=zap.NewProduction()
+		Log,err=zap.NewProduction(zap.AddStacktrace(zap.DPanicLevel))
 		Log.Info("Logger Initialized (Production)")
 	}
 
