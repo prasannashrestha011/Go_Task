@@ -23,6 +23,7 @@ import (
 	"main/internal/repository"
 	"main/internal/services"
 	"main/internal/utils"
+	"time"
 
 	"github.com/gin-gonic/gin"
 	"go.uber.org/zap"
@@ -47,6 +48,9 @@ func main() {
 	}
 
 	utils.InitJWT()
+
+	
+	go utils.CleanUpLimits(time.Minute * 5)
 	//initializing user repository
 
 	userRepo:=repository.NewRepository(database.DB)

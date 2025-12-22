@@ -25,6 +25,7 @@ import (
 	"main/internal/services"
 	"main/internal/utils"
 	"net/http"
+	"time"
 
 	"github.com/go-chi/chi/v5"
 	httpSwagger "github.com/swaggo/http-swagger"
@@ -44,6 +45,8 @@ func main() {
 	service:=services.NewUserService(repo)
 	userHandlers:=handlers.NewUserHandler(service)
 	
+	go utils.CleanUpLimits(time.Minute * 5)
+
 	r.Use(chimiddlewares.LoggerMiddleware)
 	r.Use(chimiddlewares.ErrorMiddleware)
 

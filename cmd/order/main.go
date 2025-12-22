@@ -23,6 +23,7 @@ import (
 	"main/internal/services"
 	"main/internal/utils"
 	"net/http"
+	"time"
 
 	"github.com/gorilla/mux"
 )
@@ -49,6 +50,7 @@ func main() {
 	r.Use(chimiddlewares.ErrorMiddleware)
 	r.Use(chimiddlewares.JWTAuthMiddleware)
 	
+	go utils.CleanUpLimits(time.Minute * 5)
 	
 	r.HandleFunc("/orders",handler.GetALLOrders).Methods("GET")
 	r.HandleFunc("/orders",handler.CreateOrder).Methods("POST")
