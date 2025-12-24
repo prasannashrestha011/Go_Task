@@ -13,6 +13,7 @@ type User struct {
 	Name       string
 	Email      string
 	Password   string
+	IsVerified bool
 	CreatedAt time.Time
 	UpdatedAt time.Time
 }
