@@ -14,6 +14,11 @@ type LoginResponseDTO struct {
 	User         LoginMetaDataDTO `json:"user"`
 }
 
+type VerifyEmailRequest struct{
+	Email string `json:"email" binding:"required,email"`
+	Code int `json:"code" binding:"required"`
+}
+
 type LoginMetaDataDTO struct {
 	ID    uuid.UUID `json:"id"`
 	Name  string `json:"name"`
