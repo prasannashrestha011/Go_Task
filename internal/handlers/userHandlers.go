@@ -2,6 +2,8 @@ package handlers
 
 import (
 	"encoding/json"
+	"fmt"
+	"main/internal/config"
 	chimiddlewares "main/internal/middlewares/chi_middlewares"
 	"main/internal/schema"
 	"main/internal/services"
@@ -10,6 +12,7 @@ import (
 
 	"github.com/go-chi/chi/v5"
 	"github.com/google/uuid"
+	"github.com/resend/resend-go/v2"
 )
 
 type UserService interface {
@@ -128,7 +131,37 @@ func (u *userHandler) REGISTER_USER(w http.ResponseWriter, r *http.Request) {
 		chimiddlewares.SetError(w,appErr)
 		return
 	}
-	resp:=schema.SuccessResponse(user_details,"User successfully registered with email "+new_user.Email)
+
+	code:=utils.GenerateVerificationCode()
+	err=utils.StoreVerificationCode(ctx,user_details.Email,code)
+	if err!=nil{
+		resp:=utils.NewAppError(http.StatusInternalServerError,"INTERNAL_SERVER_ERR","Failed to generate verification code, please try again later",nil)
+		chimiddlewares.SetError(w,resp)
+		return
+	}
+	email_req_details:=&resend.SendEmailRequest{
+		From: config.AppCfgs.Resend.AppDomain,
+		To: []string{user_details.Email},
+		Subject: "Verification Code",
+		Html: fmt.Sprintf(`
+			<h2>Email Verification</h2>
+			<p>Hi %s,</p>
+			<p>Thank you for registering. Please use the verification code below to complete your registration:</p>
+			<h3 style="color: #2F80ED;">%d</h3>
+			<p>This code will expire in 3 minutes.</p>
+			<p>If you did not request this, please ignore this email.</p>
+			<hr>
+			<p style="font-size: 12px; color: #888;">Need help? Contact our support team at support@example.com</p>
+		`, user_details.Name, code),
+
+	}
+	isSent,message,err:=utils.SendEmail(email_req_details)
+	if err!=nil && !isSent{
+		resp:=utils.NewAppError(http.StatusInternalServerError,"INTERNAL_SERVER_ERR",message,nil)
+		chimiddlewares.SetError(w,resp)
+		return
+	}
+	resp:=schema.SuccessResponse(nil,"Verification code has been sent to "+user_details.Email)
 	utils.JsonResponseWriter(w,http.StatusOK,resp)
 }
 
