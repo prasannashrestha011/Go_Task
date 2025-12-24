@@ -12,11 +12,16 @@ type AppConfigs struct {
 		Env string
 	}
 	Database struct {
-		Url string
+		Postgres string
+		Redis string
 	}
 	Jwt struct {
 		Secret        string
 		AccessExpiry  time.Duration
 		RefreshExpiry time.Duration 
+	}
+	Resend struct{
+		ApiKey string 
+		AppDomain string
 	}
 }
