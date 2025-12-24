@@ -34,16 +34,29 @@ import (
 func main() {
 	config.Load()
 	isDev:=config.AppCfgs.Server.Env
-	dsn:=config.AppCfgs.Database.Url
+	dsn:=config.AppCfgs.Database.Postgres
+	redis_url:=config.AppCfgs.Database.Redis
+	resendApiKey:=config.AppCfgs.Resend.ApiKey
+
 	logger.InitLogger(isDev=="DEV")
 
 	utils.InitJWT()
 	database.Connect(dsn)
+	database.InitRedis(redis_url)
+
+	
+	utils.InitJWT()
+
+
+	utils.InitEmailClient(resendApiKey)
+
+
+
 	r := chi.NewRouter()
 
 	repo:=repository.NewRepository(database.DB)
-	service:=services.NewUserService(repo)
-	userHandlers:=handlers.NewUserHandler(service)
+	userService:=services.NewUserService(repo)
+	userHandlers:=handlers.NewUserHandler(userService)
 	
 	go utils.CleanUpLimits(time.Minute * 5)
 

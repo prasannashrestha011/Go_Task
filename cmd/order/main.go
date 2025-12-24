@@ -32,7 +32,7 @@ func main() {
 
 	config.Load()
 	isDev:=config.AppCfgs.Server.Env
-	dsn:=config.AppCfgs.Database.Url
+	dsn:=config.AppCfgs.Database.Postgres
 	logger.InitLogger(isDev=="DEV")
 
 	utils.InitJWT()

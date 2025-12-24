@@ -26,7 +26,6 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
-	"go.uber.org/zap"
 
 	_ "main/cmd/auth/docs"
 
@@ -39,16 +38,17 @@ func main() {
 
 	config.Load()
 	isDev:=config.AppCfgs.Server.Env
-	dsn:=config.AppCfgs.Database.Url
+	dsn:=config.AppCfgs.Database.Postgres
+	redis_url:=config.AppCfgs.Database.Redis
+	resendApiKey:=config.AppCfgs.Resend.ApiKey
 
 	logger.InitLogger(isDev=="DEV")
-	err:=database.Connect(dsn)
-	if err!=nil{
-		logger.Log.Error("Database connection error: ",zap.Error(err))
-	}
-
+	database.Connect(dsn)
+	database.InitRedis(redis_url)
 	utils.InitJWT()
 
+
+	utils.InitEmailClient(resendApiKey)
 	
 	go utils.CleanUpLimits(time.Minute * 5)
 	//initializing user repository
@@ -65,6 +65,7 @@ func main() {
 	auth.Use(ginmiddlewares.RateLimit(0.5,10))
 	auth.Use(ginmiddlewares.ErrorMiddleware())
 	auth.POST("/login",authHandler.Login)
+	auth.POST("/verify/email",authHandler.VerifyEmail)
 	auth.POST("/refresh",authHandler.Refresh)
 
 	//protected routes
